@@ -1,20 +1,22 @@
 package org.example.service;
 
-import lombok.RequiredArgsConstructor;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.example.dto.AuthRequest;
 import org.example.entity.UserInfo;
 import org.example.entity.UserInfoUserDetail;
 import org.example.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserDetailUserInfo implements UserDetailsService {
-
 
     private UserRepository userRepository;
     public UserDetailUserInfo(UserRepository userRepository){

@@ -1,6 +1,7 @@
 package org.example.config;
 
 
+import org.example.filter.JwtFilter;
 import org.example.repository.UserRepository;
 import org.example.service.UserDetailUserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,6 +28,9 @@ public class SecurityConfig {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtFilter jwtFilter;
     @Bean
     public UserDetailsService userDetailsService(){
         /*UserDetails adminUser = User.withUsername("admin")
@@ -46,9 +52,15 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
                         .requestMatchers("/products")
                         .hasRole("USER")
-                        .requestMatchers(HttpMethod.POST,"/createUser").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/createUser","/generateToken").permitAll()
                         .requestMatchers("/welcome").permitAll()
-                ).csrf(AbstractHttpConfigurer::disable).formLogin(Customizer.withDefaults()).build();
+                ).csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+
+                //.formLogin(Customizer.withDefaults()).build();
                 //.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST,"/createUser").permitAll())
                 //.authorizeHttpRequests(authorize -> authorize.requestMatchers("/welcome").permitAll())
                 //.formLogin(Customizer.withDefaults()).build();

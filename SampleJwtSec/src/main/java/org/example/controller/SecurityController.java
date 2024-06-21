@@ -1,6 +1,8 @@
 package org.example.controller;
 
+import org.example.dto.AuthRequest;
 import org.example.entity.UserInfo;
+import org.example.service.JwtToken;
 import org.example.service.UserDetailUserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class SecurityController {
 
+    @Autowired
+    private JwtToken jwtToken;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
@@ -35,5 +39,10 @@ public class SecurityController {
         userInfo.setPassword(bCryptPasswordEncoder.encode(userInfo.getPassword()));
         userDetailUserInfo.createUser(userInfo);
         return "user created successfully";
+    }
+
+    @PostMapping("/generateToken")
+    public String generateToken(@RequestBody AuthRequest authRequest){
+        return jwtToken.authenticate(authRequest);
     }
 }
